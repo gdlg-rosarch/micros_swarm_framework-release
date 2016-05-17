@@ -16,7 +16,7 @@ tracks:
     last_version: 0.0.6
     name: micros_swarm_framework
     patches: null
-    release_inc: '1'
+    release_inc: '2'
     release_repo_url: https://github.com/xuefengchang/micros_swarm_framework-release.git
     release_tag: :{version}
     ros_distro: indigo
