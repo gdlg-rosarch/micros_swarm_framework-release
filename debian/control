@@ -1,0 +1,13 @@
+Source: ros-indigo-micros-swarm-framework
+Section: misc
+Priority: extra
+Maintainer: Xuefeng Chang <changxuefengcn@163.com>
+Build-Depends: debhelper (>= 9.0.0), ros-indigo-catkin, ros-indigo-geometry-msgs, ros-indigo-message-generation, ros-indigo-nav-msgs, ros-indigo-roscpp, ros-indigo-rospy, ros-indigo-std-msgs
+Homepage: http://wiki.ros.org/micros_swarm_framework
+Standards-Version: 3.9.2
+
+Package: ros-indigo-micros-swarm-framework
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ros-indigo-geometry-msgs, ros-indigo-message-runtime, ros-indigo-nav-msgs, ros-indigo-roscpp, ros-indigo-rospy, ros-indigo-std-msgs
+Description: A programming framework for robot swarms, including a communication kernel and a synchronization protocol.
+ This package also provides essential data structures for swarm robotics, such as Swarm, Neighbors, and Virtual Stigmergy.
