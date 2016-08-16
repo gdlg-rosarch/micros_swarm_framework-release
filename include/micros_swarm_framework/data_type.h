@@ -40,12 +40,11 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 #include <boost/variant.hpp>
 #include <boost/function.hpp>
 #include <boost/foreach.hpp>
-#include <boost/any.hpp> 
 
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/archive/text_iarchive.hpp>
-#include <boost/serialization/string.hpp> 
-#include <boost/serialization/vector.hpp> 
+#include <boost/serialization/string.hpp>
+#include <boost/serialization/vector.hpp>
 
 #include "ros/ros.h"
 
@@ -147,7 +146,7 @@ namespace micros_swarm_framework{
         }
         
         void removeSwarmID(int swarm_id)
-        {     
+        {
             swarm_id_vector_.erase(std::remove(swarm_id_vector_.begin(), swarm_id_vector_.end(), swarm_id), swarm_id_vector_.end());
         }
     
@@ -190,9 +189,9 @@ namespace micros_swarm_framework{
             std::string vstig_value_;
             time_t vstig_timestamp_;
             //the id of the robot which last change the virtual stigmergy
-            unsigned int robot_id_;
+            int robot_id_;
         public:
-            VirtualStigmergyTuple( std::string value, time_t time, unsigned int id)\
+            VirtualStigmergyTuple( std::string value, time_t time, int id)\
               :vstig_value_(value), vstig_timestamp_(time), robot_id_(id){}
 
             std::string getVirtualStigmergyValue(){return vstig_value_;}
@@ -204,8 +203,8 @@ namespace micros_swarm_framework{
             time_t getVirtualStigmergyTimestamp(){return vstig_timestamp_;}
             void setVirtualStigmergyTimestamp(time_t time_now){vstig_timestamp_=time_now;}
     
-            unsigned int getRobotID(){return robot_id_;}
-            void setRobotID(unsigned int robot_id){robot_id_=robot_id;}
+            int getRobotID(){return robot_id_;}
+            void setRobotID(int robot_id){robot_id_=robot_id;}
             
             void print()
             {
@@ -249,24 +248,6 @@ namespace micros_swarm_framework{
                 std::cout<<"c_ = "<<c_<<std::endl;
             }
     };
-    
-    typedef boost::variant<boost::function<void(int)>,
-                           boost::function<void(float)>,
-                           boost::function<void(double)>,
-                           boost::function<void(bool)>,
-                           boost::function<void(std::string)>,
-                           boost::function<void()> >NeighborCommunicationCallBack;
-                           
-    template <class Type>  
-    Type stringToNumber(const std::string& str)  
-    {  
-        std::istringstream iss(str);  
-        Type number;  
-        iss >> number;
-        
-        return number;      
-    } 
-    
 };
 
 #endif
