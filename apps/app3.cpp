@@ -160,7 +160,7 @@ pair<double,double> f_r()
 
 namespace micros_swarm_framework{
 
-    App3::App3(ros::NodeHandle nh):Application(nh)
+    App3::App3(ros::NodeHandle node_handle):Application(node_handle)
     {
     }
     
@@ -181,16 +181,16 @@ namespace micros_swarm_framework{
         micros_swarm_framework::Neighbors<micros_swarm_framework::NeighborBase> n(true);
 
         typename std::map<int, micros_swarm_framework::NeighborBase>::iterator it; 
-        for(it=n.data_.begin();it!=n.data_.end();it++)
+        for(it=n.data().begin();it!=n.data().end();it++)
         {
-            NeighborHandle* nh=new NeighborHandle(it->first, it->second.getX(), it->second.getY(), it->second.getVX(), it->second.getVY());
+            NeighborHandle* nh=new NeighborHandle(it->first, it->second.x, it->second.y, it->second.vx, it->second.vy);
             neighbor_list.push_back(nh);
         }
 
-        micros_swarm_framework::Base nl=getRobotBase();
+        micros_swarm_framework::Base nl=base();
 
-        my_position=pair<double,double>(nl.getX(), nl.getY());
-        my_velocity=pair<double,double>(nl.getVX(), nl.getVY());
+        my_position=pair<double,double>(nl.x, nl.y);
+        my_velocity=pair<double,double>(nl.vx, nl.vy);
       
         msg.linear.x += (f_g().first*pm1+f_d().first*pm2+f_r().first*pm3)/hz;
         msg.linear.y += (f_g().second*pm1+f_d().second*pm2+f_r().second*pm3)/hz;
@@ -204,7 +204,7 @@ namespace micros_swarm_framework{
             msg.linear.y=1;
         if (msg.linear.y <-1)
             msg.linear.y=-1;
-        pub_.publish(msg);
+        pub.publish(msg);
       
         neighbor_list.clear();  
     }
@@ -218,18 +218,19 @@ namespace micros_swarm_framework{
         float vy=lmsg.twist.twist.linear.y;
     
         micros_swarm_framework::Base l(x, y, 0, vx, vy, 0);
-        setRobotBase(l);
+        set_base(l);
     }
     
     void App3::start()
     {
         init();
         
-        setNeighborDistance(12);
-        sub_ = nh_.subscribe("base_pose_ground_truth", 1000, &App3::baseCallback, this, ros::TransportHints().udp());
-        pub_ = nh_.advertise<geometry_msgs::Twist>("cmd_vel", 1000);
+        set_neighbor_distance(12);
+        pub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 1000);
+        sub = nh.subscribe("base_pose_ground_truth", 1000, &App3::baseCallback, this, ros::TransportHints().udp());
+        ros::Duration(5).sleep();  //this is necessary, in order that the runtime platform kernel of the robot has enough time to publish it's base information.
         
-        timer_ = nh_.createTimer(ros::Duration(interval), &App3::publish_cmd, this);
+        timer = nh.createTimer(ros::Duration(interval), &App3::publish_cmd, this);
     }
 };
 
