@@ -277,14 +277,27 @@ if (${USE_OPENSPLICE_DDS})
   )
 endif()
 
-#add_executable(testrtp test/testrtp.cpp)
+add_library(micros_swarm_framework_TestVstigBroker
+  test/testvstig.cpp
+  test/brokers/testvstig_broker.cpp
+)
+add_dependencies(micros_swarm_framework_TestVstigBroker ${micros_swarm_framework_EXPORTED_TARGETS})
+
+if (${USE_OPENSPLICE_DDS})
+  target_link_libraries(micros_swarm_framework_TestVstigBroker
+    opensplice_dds_pub_sub
+    libddskernel.so
+    libdcpsisocpp.so
+  )
+endif()
+
+#add_executable(testrtp test/testrtp.cpp src/runtime_platform.cpp)
 #add_dependencies(testrtp ${micros_swarm_framework_EXPORTED_TARGETS})
 #target_link_libraries(testrtp
 #   ${Boost_THREAD_LIBRARY}
 #   ${Boost_REGEX_LIBRARY}
 #   ${Boost_SERIALIZATION_LIBRARY}
 #   ${catkin_LIBRARIES}
-#   micros_swarm_framework_rtp_kernel
 #)
 
 #add_executable(pub src/opensplice_dds/pub.cpp)
@@ -334,7 +347,7 @@ endif()
 # )
 
 ## Mark executables and/or libraries for installation
-install(TARGETS micros_swarm_framework_rtp_kernel micros_swarm_framework_App1Broker micros_swarm_framework_App2Broker micros_swarm_framework_App3Broker micros_swarm_framework_TestNCBroker
+install(TARGETS micros_swarm_framework_rtp_kernel micros_swarm_framework_App1Broker micros_swarm_framework_App2Broker micros_swarm_framework_App3Broker
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

@@ -1,6 +1,6 @@
 /**
 Software License Agreement (BSD)
-\file      communication_interface.h
+\file      testvstig_broker.cpp 
 \authors Xuefeng Chang <changxuefengcn@163.com>
 \copyright Copyright (c) 2016, the micROS Team, HPCL (National University of Defense Technology), All rights reserved.
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -20,42 +20,38 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCL
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef COMMUNICATION_INTERFACE_H_
-#define COMMUNICATION_INTERFACE_H_
-
-#include <iostream>
-#include <string>
-#include <time.h>
-#include <stdlib.h>
-#include <vector>
-#include <stack>
-#include <map>
-#include <set>
-#include <queue>
-#include <algorithm>
-
-#include "ros/ros.h"
-
-#ifdef ROS
-#include "micros_swarm_framework/MSFPPacket.h"
-#endif
-
-#ifdef OPENSPLICE_DDS
-#include "opensplice_dds/MSFPPacket.h"
-#include "opensplice_dds/check_status.h"
-#include "opensplice_dds/publisher.h"
-#include "opensplice_dds/subscriber.h"
-#endif
+#include "apps/testvstig.h"
 
 namespace micros_swarm_framework{
-
-    class CommunicationInterface{
-        public:   
-            std::string name_;
-            boost::function<void(const MSFPPacket& packet)> parser_;
-            
-            virtual void broadcast(const MSFPPacket& msfp_packet)=0;
-            virtual void receive(boost::function<void(const MSFPPacket& packet)> callback)=0;
+    
+    class TestVstigBroker : public nodelet::Nodelet
+    {
+        public:
+            ros::NodeHandle nh_;
+            boost::shared_ptr<Application> app_;
+                     
+            TestVstigBroker();
+            ~TestVstigBroker();
+            virtual void onInit();
     };
+
+    TestVstigBroker::TestVstigBroker()
+    {
+    
+    }
+    
+    TestVstigBroker::~TestVstigBroker()
+    {
+        
+    }
+    
+    void TestVstigBroker::onInit()
+    {
+        nh_ = getNodeHandle();
+        app_.reset(new TestVstig(nh_));
+        app_->start();
+    }
 };
-#endif
+
+// Register the nodelet
+PLUGINLIB_EXPORT_CLASS(micros_swarm_framework::TestVstigBroker, nodelet::Nodelet)
