@@ -1,6 +1,6 @@
 /**
 Software License Agreement (BSD)
-\file      communication_interface.h
+\file      testvstig.h
 \authors Xuefeng Chang <changxuefengcn@163.com>
 \copyright Copyright (c) 2016, the micROS Team, HPCL (National University of Defense Technology), All rights reserved.
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -20,42 +20,32 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCL
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef COMMUNICATION_INTERFACE_H_
-#define COMMUNICATION_INTERFACE_H_
+#ifndef TESTVSTIG_H_
+#define TESTVSTIG_H_
 
-#include <iostream>
-#include <string>
-#include <time.h>
-#include <stdlib.h>
-#include <vector>
-#include <stack>
-#include <map>
-#include <set>
-#include <queue>
-#include <algorithm>
+#include "std_msgs/String.h"
+#include "nav_msgs/Odometry.h"
+#include "geometry_msgs/Twist.h"
 
-#include "ros/ros.h"
-
-#ifdef ROS
-#include "micros_swarm_framework/MSFPPacket.h"
-#endif
-
-#ifdef OPENSPLICE_DDS
-#include "opensplice_dds/MSFPPacket.h"
-#include "opensplice_dds/check_status.h"
-#include "opensplice_dds/publisher.h"
-#include "opensplice_dds/subscriber.h"
-#endif
+#include "micros_swarm_framework/micros_swarm_framework.h"
 
 namespace micros_swarm_framework{
-
-    class CommunicationInterface{
-        public:   
-            std::string name_;
-            boost::function<void(const MSFPPacket& packet)> parser_;
+    
+    class TestVstig : public Application
+    {
+        public:
+            ros::Timer timer;
+            ros::Publisher pub;
+            ros::Subscriber sub;
             
-            virtual void broadcast(const MSFPPacket& msfp_packet)=0;
-            virtual void receive(boost::function<void(const MSFPPacket& packet)> callback)=0;
+            micros_swarm_framework::VirtualStigmergy<float> vs;
+            void loop(const ros::TimerEvent&);
+            void baseCallback(const nav_msgs::Odometry& lmsg);
+            
+            TestVstig(ros::NodeHandle node_handle);
+            ~TestVstig();
+            virtual void start(); 
     };
 };
+
 #endif
