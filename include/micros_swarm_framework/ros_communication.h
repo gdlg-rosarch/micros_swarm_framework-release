@@ -42,10 +42,6 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 namespace micros_swarm_framework{
     
     class ROSCommunication : public CommunicationInterface{
-        private:
-            ros::NodeHandle node_handle_;
-            ros::Publisher packet_publisher_;
-            ros::Subscriber packet_subscriber_;
         public:
             ROSCommunication()
             {
@@ -59,7 +55,7 @@ namespace micros_swarm_framework{
                 packet_publisher_ = node_handle_.advertise<micros_swarm_framework::MSFPPacket>("/micros_swarm_framework_topic", 1000, true);
             }
             
-            void broadcast(micros_swarm_framework::MSFPPacket msfp_packet)
+            void broadcast(const MSFPPacket& msfp_packet)
             {
                 static bool flag=false;
                 if(!flag)
@@ -67,7 +63,8 @@ namespace micros_swarm_framework{
                     ros::Duration(1).sleep();
                     if(!packet_publisher_)
                     {
-                        ROS_INFO("packet_publisher could not initialize");
+                        ROS_INFO("ROS communicator could not initialize!");
+                        exit(-1);
                     }
                     flag=true;
                 }
@@ -78,10 +75,21 @@ namespace micros_swarm_framework{
                 }
             }
             
-            void receive(void (*callback)(const MSFPPacket& packet))
+            void callback(const MSFPPacket& packet)
             {
-                packet_subscriber_ = node_handle_.subscribe("/micros_swarm_framework_topic", 1000, callback, ros::TransportHints().udp());
+                parser_(packet);
             }
+            
+            void receive(boost::function<void(const MSFPPacket&)> parser)
+            {
+                parser_=parser;
+                packet_subscriber_ = node_handle_.subscribe("/micros_swarm_framework_topic", 1000, &ROSCommunication::callback, this, ros::TransportHints().udp());
+            }
+            
+        private:
+            ros::NodeHandle node_handle_;
+            ros::Publisher packet_publisher_;
+            ros::Subscriber packet_subscriber_;
     };
 };
 #endif

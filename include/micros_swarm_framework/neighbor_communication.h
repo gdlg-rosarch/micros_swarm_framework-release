@@ -33,10 +33,12 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 #include <set>
 #include <queue>
 #include <algorithm>
+#include <typeinfo>
 
 #include "ros/ros.h"
 
 #include "micros_swarm_framework/runtime_platform.h"
+#include "micros_swarm_framework/listener_helper.h"
 #include "micros_swarm_framework/communication_interface.h"
 #ifdef ROS
 #include "micros_swarm_framework/ros_communication.h"
@@ -49,12 +51,8 @@ namespace micros_swarm_framework{
     
     template<class Type>
     class Broadcaster{
-        private:
-            boost::shared_ptr<RuntimePlatform> rtp_;
-            boost::shared_ptr<CommunicationInterface> communicator_;
-            std::string key_;
         public:
-            Broadcaster(std::string key)
+            Broadcaster(const std::string& key)
             {
                 key_=key;
                 rtp_=Singleton<RuntimePlatform>::getSingleton();
@@ -66,7 +64,7 @@ namespace micros_swarm_framework{
                 #endif
             }
             
-            void broadcast(Type value)
+            void broadcast(const Type& value)
             {
                 std::ostringstream archiveStream;
                 boost::archive::text_oarchive archive(archiveStream);
@@ -94,51 +92,32 @@ namespace micros_swarm_framework{
                 
                 communicator_->broadcast(p);
             }
-    };
-    
-    class Listener{
         private:
             boost::shared_ptr<RuntimePlatform> rtp_;
             boost::shared_ptr<CommunicationInterface> communicator_;
             std::string key_;
-        public:
-            Listener(std::string key)
+    };
+    
+    template<typename Type>
+    class Listener{
+        public:        
+            Listener(const std::string& key, const boost::function<void(const Type&)>& callback)
             {
                 key_=key;
                 rtp_=Singleton<RuntimePlatform>::getSingleton();
-                #ifdef ROS
-                communicator_=Singleton<ROSCommunication>::getSingleton();
-                #endif
-                #ifdef OPENSPLICE_DDS
-                communicator_=Singleton<OpenSpliceDDSCommunication>::getSingleton();
-                #endif
-            }
-            
-            void listen(boost::function<void(const std::string&)> f)
-            {
-                rtp_->insertOrUpdateCallbackFunctions(key_, f);
-            }
-            
-            //void listen(void (*f)(std::string value))
-            //{
                 
-            //}
+                helper_.reset(new ListenerHelperT<Type>(key, callback));
+                rtp_->insertOrUpdateListenerHelper(key_, helper_);
+            }
             
             void ignore()
             {
-                rtp_->deleteCallbackFunctions(key_);
+                rtp_->deleteListenerHelper(key_);
             }
+        private:
+            std::string key_;
+            boost::shared_ptr<RuntimePlatform> rtp_;
+            boost::shared_ptr<ListenerHelper> helper_;
     };
-    
-    template<class Type>
-    Type convertToType(const std::string& value_str)  //TODO, 
-    {
-        std::istringstream archiveStream(value_str);
-        boost::archive::text_iarchive archive(archiveStream); 
-        Type value;
-        archive>>value;
-                
-        return value;
-    }
 };
 #endif

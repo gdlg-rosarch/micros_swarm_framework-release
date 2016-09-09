@@ -30,7 +30,7 @@ namespace micros_swarm_framework{
         float y;
     };
 
-    App1::App1(ros::NodeHandle nh):Application(nh)
+    App1::App1(ros::NodeHandle node_handle):Application(node_handle)
     {
     }
     
@@ -52,12 +52,12 @@ namespace micros_swarm_framework{
 
     XY App1::force_sum(micros_swarm_framework::NeighborBase n, XY &s)
     {
-        micros_swarm_framework::Base l=getRobotBase();
-        float xl=l.getX();
-        float yl=l.getY();
+        micros_swarm_framework::Base l=base();
+        float xl=l.x;
+        float yl=l.y;
     
-        float xn=n.getX();
-        float yn=n.getY();
+        float xn=n.x;
+        float yn=n.y;
     
         float dist=sqrt(pow((xl-xn),2)+pow((yl-yn),2));
      
@@ -80,25 +80,24 @@ namespace micros_swarm_framework{
     
         micros_swarm_framework::Neighbors<micros_swarm_framework::NeighborBase> n(true);
         boost::function<XY(NeighborBase, XY &)> bf=boost::bind(&App1::force_sum, this, _1, _2);
-        sum=n.neighborsReduce(bf, sum);
+        sum=n.reduce(bf, sum);
     
         return sum;
     }
     
     void App1::publish_cmd(const ros::TimerEvent&)
     {
-        
         XY v=direction();
         geometry_msgs::Twist t;
         t.linear.x=v.x;
         t.linear.y=v.y;
         
-        pub_.publish(t);
+        pub.publish(t);
     }
 
     void App1::motion()
     {
-        timer_ = nh_.createTimer(ros::Duration(0.1), &App1::publish_cmd, this);
+        timer = nh.createTimer(ros::Duration(0.1), &App1::publish_cmd, this);
     }
     
     void App1::baseCallback(const nav_msgs::Odometry& lmsg)
@@ -110,16 +109,17 @@ namespace micros_swarm_framework{
         float vy=lmsg.twist.twist.linear.y;
     
         micros_swarm_framework::Base l(x, y, 0, vx, vy, 0);
-        setRobotBase(l);
+        set_base(l);
     }
     
     void App1::start()
     {
         init();
         
-        sub_ = nh_.subscribe("base_pose_ground_truth", 1000, &App1::baseCallback, this, ros::TransportHints().udp());
-        pub_ = nh_.advertise<geometry_msgs::Twist>("cmd_vel", 1000);
-    
+        pub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 1000);
+        sub = nh.subscribe("base_pose_ground_truth", 1000, &App1::baseCallback, this, ros::TransportHints().udp());
+        ros::Duration(5).sleep();  //this is necessary, in order that the runtime platform kernel of the robot has enough time to publish it's base information.
+        
         motion();
     }
 };
