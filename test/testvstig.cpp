@@ -1,6 +1,6 @@
 /**
 Software License Agreement (BSD)
-\file      testnc.cpp 
+\file      testvstig.cpp 
 \authors Xuefeng Chang <changxuefengcn@163.com>
 \copyright Copyright (c) 2016, the micROS Team, HPCL (National University of Defense Technology), All rights reserved.
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -20,36 +20,57 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCL
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "apps/testnc.h"
+#include "apps/testvstig.h"
 
 namespace micros_swarm_framework{
 
-    TestNC::TestNC(ros::NodeHandle node_handle):Application(node_handle)
+    TestVstig::TestVstig(ros::NodeHandle node_handle):Application(node_handle)
     {
     }
     
-    TestNC::~TestNC()
+    TestVstig::~TestVstig()
     {
     }
     
-    void TestNC::callback(const float& value)
+    void TestVstig::loop(const ros::TimerEvent&)
     {
-        std::cout<<"I received the value: "<<value<<std::endl;
-    }
-    
-    void TestNC::start()
-    {
-        Broadcaster<float> bc("testkey");
-        boost::function<void(const float&)> cb=boost::bind(&TestNC::callback, this, _1);
-        Listener<float> ls("testkey", cb);
-        
-        //ls.ignore();
-        
-        for(int i=0;i<10;i++)
+        float tmp=0;
+        //std::string robot_id_string=boost::lexical_cast<std::string>(getRobotID());
+        //tmp=vs.get(robot_id_string);
+        if(vs.size()<20)
         {
-            bc.broadcast(3.141);
-            ros::Duration(1).sleep();
+            std::cout<<"robot "<<robot_id()<<", vs :"<<tmp<<", size: "<<vs.size()<<std::endl;
+            micros_swarm_framework::Neighbors<micros_swarm_framework::NeighborBase> n(true);
+            n.print();
         }
+        //vs.put(robot_id_string, tmp+0.01);
+    }
+    
+    void TestVstig::baseCallback(const nav_msgs::Odometry& lmsg)
+    {
+        float x=lmsg.pose.pose.position.x;
+        float y=lmsg.pose.pose.position.y;
+    
+        float vx=lmsg.twist.twist.linear.x;
+        float vy=lmsg.twist.twist.linear.y;
+    
+        micros_swarm_framework::Base l(x, y, 0, vx, vy, 0);
+        set_base(l);
+    }
+    
+    void TestVstig::start()
+    {
+        set_neighbor_distance(1.2);
+        sub = nh.subscribe("base_pose_ground_truth", 1000, &TestVstig::baseCallback, this, ros::TransportHints().udp());
+        
+        ros::Duration(5).sleep();  //TODO. this is necessary, in order that the runtime platform kernel of the robot has enough time to publish it's base information.
+        
+        //test virtual stigmergy
+        vs=micros_swarm_framework::VirtualStigmergy<float>(1);
+        std::string robot_id_string=boost::lexical_cast<std::string>(robot_id());
+        vs.put(robot_id_string, 3.14);
+        
+        timer = nh.createTimer(ros::Duration(0.1), &TestVstig::loop, this);
     }
 };
 
