@@ -49,7 +49,7 @@ namespace micros_swarm_framework{
             NULL,
             STATUS_MASK_NONE);
         checkHandle(participant, "DDS::DomainParticipantFactory::create_participant");
-
+        
         //Register the required datatype for MSFPPacket
         MSFPPacketTS = new MSFPPacketTypeSupport();
         checkHandle(MSFPPacketTS.in(), "new MSFPPacketTypeSupport");
@@ -63,9 +63,10 @@ namespace micros_swarm_framework{
         status = participant->get_default_topic_qos(topic_qos);
         checkStatus(status, "DDS::DomainParticipant::get_default_topic_qos");
         
-        //topic_qos.reliability.kind = DDS::BEST_EFFORT_RELIABILITY_QOS;
-        topic_qos.reliability.kind = RELIABLE_RELIABILITY_QOS;
-        topic_qos.durability_service.history_kind=KEEP_LAST_HISTORY_QOS;
+        topic_qos.reliability.kind = BEST_EFFORT_RELIABILITY_QOS;
+        //topic_qos.reliability.kind = RELIABLE_RELIABILITY_QOS;
+        topic_qos.durability_service.history_kind = KEEP_LAST_HISTORY_QOS;
+        //topic_qos.durability_service.history_depth = 4000;
 
         //Make the tailored QoS the new default
         status = participant->set_default_topic_qos(topic_qos);
@@ -93,7 +94,9 @@ namespace micros_swarm_framework{
         
         status = subscriber_->get_default_datareader_qos(dr_qos);
         dr_qos.history.kind = KEEP_ALL_HISTORY_QOS;
+        //dr_qos.history.kind = KEEP_LAST_HISTORY_QOS;
         dr_qos.destination_order.kind = BY_SOURCE_TIMESTAMP_DESTINATIONORDER_QOS;
+        //dr_qos.durability.kind = TRANSIENT_LOCAL_DURABILITY_QOS;
         dr_qos.durability.kind = VOLATILE_DURABILITY_QOS;
 
         //Create a DataReader for the NamedMessage Topic (using the appropriate QoS)
@@ -114,24 +117,26 @@ namespace micros_swarm_framework{
         MSFPPacketListener *myListener = new MSFPPacketListener();
         myListener->callBack_ = callBack;  //set callBack function
         //myListener->callBack_ = boost::bind(callBack, _1);  //set callBack function
-        myListener->MSFPPacketDR_ = MSFPPacketDataReader::_narrow(MSFPPacketDR.in());
-        checkHandle(myListener->MSFPPacketDR_.in(), "MSFPPacketDataReader::_narrow");
+        //myListener->MSFPPacketDR_ = MSFPPacketDataReader::_narrow(MSFPPacketDR.in());
+        //checkHandle(myListener->MSFPPacketDR_.in(), "MSFPPacketDataReader::_narrow");
 
         //DDS::StatusMask mask = DDS::DATA_AVAILABLE_STATUS | DDS::REQUESTED_DEADLINE_MISSED_STATUS;
         DDS::StatusMask mask = DDS::DATA_AVAILABLE_STATUS;
-        myListener->MSFPPacketDR_->set_listener(myListener, mask);
+        //myListener->MSFPPacketDR_->set_listener(myListener, mask);
+        MSFPPacketDR->set_listener(myListener, mask);
     }
     
     void Subscriber::subscribe(boost::function<void(const MSFPPacket&)> callBack)
     {
         MSFPPacketListener *myListener = new MSFPPacketListener();
         myListener->callBack_ = callBack;  //set callBack function
-        myListener->MSFPPacketDR_ = MSFPPacketDataReader::_narrow(MSFPPacketDR.in());
-        checkHandle(myListener->MSFPPacketDR_.in(), "MSFPPacketDataReader::_narrow");
+        //myListener->MSFPPacketDR_ = MSFPPacketDataReader::_narrow(MSFPPacketDR.in());
+        //checkHandle(myListener->MSFPPacketDR_.in(), "MSFPPacketDataReader::_narrow");
 
         //DDS::StatusMask mask = DDS::DATA_AVAILABLE_STATUS | DDS::REQUESTED_DEADLINE_MISSED_STATUS;
         DDS::StatusMask mask = DDS::DATA_AVAILABLE_STATUS;
-        myListener->MSFPPacketDR_->set_listener(myListener, mask);
+        //myListener->MSFPPacketDR_->set_listener(myListener, mask);
+        MSFPPacketDR->set_listener(myListener, mask);
     }
     
     Subscriber::~Subscriber()

@@ -51,6 +51,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 
 #include "micros_swarm_framework/data_type.h"
 #include "micros_swarm_framework/listener_helper.h"
+#include "micros_swarm_framework/msg_queue_manager.h"
 
 namespace micros_swarm_framework{
 
@@ -112,6 +113,9 @@ namespace micros_swarm_framework{
             const boost::shared_ptr<ListenerHelper> getListenerHelper(const std::string& key);
             void deleteListenerHelper(const std::string& key);
             
+            const boost::shared_ptr<MsgQueueManager>& getOutMsgQueue();
+            const boost::shared_ptr<MsgQueueManager>& getInMsgQueue();
+            
             void insertBarrier(int robot_id);
             int getBarrierSize();
         private:
@@ -126,6 +130,9 @@ namespace micros_swarm_framework{
             float neighbor_distance_;
             std::map<std::string, boost::shared_ptr<ListenerHelper> > listener_helpers_;
             std::set<int> barrier_;
+            
+            boost::shared_ptr<MsgQueueManager> out_msg_queue_;
+            boost::shared_ptr<MsgQueueManager> in_msg_queue_;
             
             boost::shared_mutex mutex1_, mutex2_, mutex3_, mutex4_, mutex5_,
                                 mutex6_, mutex7_, mutex8_, mutex9_, mutex10_,

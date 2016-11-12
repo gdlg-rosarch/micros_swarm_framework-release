@@ -47,9 +47,11 @@ namespace micros_swarm_framework{
         swarms_.clear();
         neighbor_swarms_.clear();
         virtual_stigmergy_.clear();
-        barrier_.clear();
         listener_helpers_.clear();
         listener_helpers_.insert(std::pair<std::string, boost::shared_ptr<ListenerHelper> >("" , NULL));
+        in_msg_queue_.reset(new MsgQueueManager());
+        out_msg_queue_.reset(new MsgQueueManager());
+        barrier_.clear();
     }
     
     int RuntimePlatform::getRobotID()
@@ -554,7 +556,17 @@ namespace micros_swarm_framework{
         listener_helpers_.erase(key);
     }
     
-     void RuntimePlatform::insertBarrier(int robot_id)
+    const boost::shared_ptr<MsgQueueManager>& RuntimePlatform::getOutMsgQueue()
+    {
+        return out_msg_queue_;
+    }
+    
+    const boost::shared_ptr<MsgQueueManager>& RuntimePlatform::getInMsgQueue()
+    {
+        return in_msg_queue_;
+    }
+    
+    void RuntimePlatform::insertBarrier(int robot_id)
     {
         boost::unique_lock<boost::shared_mutex> lock(mutex11_);
         barrier_.insert(robot_id);
