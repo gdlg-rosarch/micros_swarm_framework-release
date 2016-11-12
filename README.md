@@ -1,3 +1,26 @@
+## micros_swarm_framework (kinetic) - 0.0.15-0
+
+The packages in the `micros_swarm_framework` repository were released into the `kinetic` distro by running `/usr/bin/bloom-release --rosdistro kinetic --track kinetic micros_swarm_framework --edit` on `Sat, 12 Nov 2016 07:09:01 -0000`
+
+The `micros_swarm_framework` package was released.
+
+Version of package(s) in repository `micros_swarm_framework`:
+
+- upstream repository: https://github.com/xuefengchang/micros_swarm_framework.git
+- release repository: unknown
+- rosdistro version: `null`
+- old version: `null`
+- new version: `0.0.15-0`
+
+Versions of tools used:
+
+- bloom version: `0.5.23`
+- catkin_pkg version: `0.2.10`
+- rosdep version: `0.11.5`
+- rosdistro version: `0.5.0`
+- vcstools version: `0.1.39`
+
+
 ## micros_swarm_framework (indigo) - 0.0.14-0
 
 The packages in the `micros_swarm_framework` repository were released into the `indigo` distro by running `/usr/bin/bloom-release micros_swarm_framework --track indigo --rosdistro indigo` on `Fri, 09 Sep 2016 08:31:58 -0000`
