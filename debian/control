@@ -1,0 +1,12 @@
+Source: ros-kinetic-micros-swarm-gazebo
+Section: misc
+Priority: extra
+Maintainer: Xuefeng Chang <changxuefengcn@163.com>
+Build-Depends: debhelper (>= 9.0.0), ros-kinetic-catkin
+Homepage: 
+Standards-Version: 3.9.2
+
+Package: ros-kinetic-micros-swarm-gazebo
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, 
+Description: micros_swarm_gazebo package.
