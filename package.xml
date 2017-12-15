@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>micros_swarm_framework</name>
-  <version>0.0.15</version>
+  <version>0.0.17</version>
   <description>
     This is a programming framework to facilitate application development involving robot swarms. It makes coding for swarms much easier by providing an adequate swarm-level abstraction, as well as tools for swarm management, various communication mechanisms and so on. It also provides essential data structures, such as Neighbor, Swarm, and Virtual Stigmergy, to the user. Most importantly, it is completely compatible with ROS Indigo and presented in the form of a C++ library, which means that all resources in the ROS ecosystem are still available to the user. It is currently  extensible to Opensplice DDS.
   </description>
@@ -41,26 +41,30 @@
   <!-- Use test_depend for packages you need only for testing: -->
   <!--   <test_depend>gtest</test_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>nodelet</build_depend>
-  <build_depend>roscpp</build_depend>
-  <build_depend>rospy</build_depend>
-  <build_depend>std_msgs</build_depend>
-  <build_depend>nav_msgs</build_depend>
-  <build_depend>geometry_msgs</build_depend>
-  <build_depend>message_generation</build_depend>
-  
-  <run_depend>nodelet</run_depend>
-  <run_depend>roscpp</run_depend>
-  <run_depend>rospy</run_depend>
-  <run_depend>std_msgs</run_depend>
-  <run_depend>nav_msgs</run_depend>
-  <run_depend>geometry_msgs</run_depend>
-  <run_depend>message_runtime</run_depend>
 
-  <!-- The export tag contains other, unspecified, tags -->
-  <export>
-    <nodelet plugin="${prefix}/rtp_plugins.xml"/>
-    <nodelet plugin="${prefix}/app_plugins.xml"/>
-  </export>
+  <run_depend>gsdf_msgs</run_depend>
+  <run_depend>micros_swarm</run_depend>
+  <run_depend>app_loader</run_depend>
+  <run_depend>ros_broker</run_depend>
+  <run_depend>opensplice_dds_broker</run_depend>
+
+  <run_depend>app1</run_depend>
+  <run_depend>app2</run_depend>
+  <run_depend>app3</run_depend>
+
+  <run_depend>olfati_saber_flocking</run_depend>
+  <run_depend>pso</run_depend>
   
+  <run_depend>testbb</run_depend>
+  <run_depend>testnc</run_depend>
+  <run_depend>testrth</run_depend>
+  <run_depend>testvstig</run_depend>
+  <run_depend>testscdspso</run_depend>
+
+  <run_depend>micros_swarm_stage</run_depend>
+  <run_depend>micros_swarm_gazebo</run_depend>
+
+  <export>
+    <metapackage/>
+  </export>
 </package>
