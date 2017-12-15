@@ -1,7 +1,0 @@
-module opensplice_dds_broker{
-    typedef sequence<char> CharSeq;
-    struct GSDFPacket {
-        CharSeq data;
-    };
-    #pragma keylist GSDFPacket
-};
