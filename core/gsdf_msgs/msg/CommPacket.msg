@@ -1,2 +1,0 @@
-CommHeader header
-CommContent content
