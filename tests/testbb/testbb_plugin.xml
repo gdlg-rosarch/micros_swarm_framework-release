@@ -1,5 +1,0 @@
-<library path="lib/libTestBb">
-    <class name="testbb/TestBb" type="testbb::TestBb" base_class_type="micros_swarm::Application">
-        <description>testbb.</description>
-    </class>
-</library>
